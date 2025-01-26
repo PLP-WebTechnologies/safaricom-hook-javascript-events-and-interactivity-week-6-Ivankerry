@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Webpage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s;
+            padding: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            z-index: 1000;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.8em;
+            display: none;
+        }
+
+        .resizable-text {
+            transition: font-size 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interactive Button -->
+    <button id="toggleBtn">Switch to Dark Mode</button>
+
+    <!-- Slider -->
+    <div style="margin: 20px 0">
+        <input type="range" id="sizeSlider" min="12" max="32" value="16">
+        <p class="resizable-text">Resizable Text</p>
+    </div>
+
+    <!-- Modal -->
+    <button id="openModal">Open Modal</button>
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="myModal">
+        <h2>Sample Modal</h2>
+        <p>This is a modal content</p>
+        <button id="closeModal">Close</button>
+    </div>
+
+    <!-- Form -->
+    <form id="myForm" style="margin-top: 20px">
+        <div>
+            <label>Name:</label>
+            <input type="text" id="name" required>
+            <span class="error" id="nameError"></span>
+        </div>
+
+        <div>
+            <label>Email:</label>
+            <input type="email" id="email" required>
+            <span class="error" id="emailError"></span>
+        </div>
+
+        <div>
+            <label>Password:</label>
+            <input type="password" id="password" required>
+            <span class="error" id="passwordError"></span>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Bonus: Dropdown -->
+    <select id="messageDropdown" style="margin-top: 20px">
+        <option value="">Select a message</option>
+        <option value="greeting">Hello!</option>
+        <option value="warning">Attention!</option>
+        <option value="farewell">Goodbye!</option>
+    </select>
+    <p id="dropdownMessage"></p>
+
+    <script>
+        // Toggle Background Color
+        let isDark = false;
+        document.getElementById('toggleBtn').addEventListener('click', () => {
+            isDark = !isDark;
+            document.body.style.backgroundColor = isDark ? '#333' : '#fff';
+            document.getElementById('toggleBtn').textContent = 
+                isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        });
+
+        // Text Size Slider
+        document.getElementById('sizeSlider').addEventListener('input', (e) => {
+            document.querySelector('.resizable-text').style.fontSize = 
+                `${e.target.value}px`;
+        });
+
+        // Modal Handling
+        const modal = document.getElementById('myModal');
+        const overlay = document.getElementById('modalOverlay');
+
+        document.getElementById('openModal').addEventListener('click', () => {
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+
+        function closeModal() {
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        // Form Validation
+        document.getElementById('myForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            // Name validation
+            const name = document.getElementById('name').value.trim();
+            if (name.length < 3) {
+                showError('nameError', 'Name must be at least 3 characters');
+                isValid = false;
+            }
+
+            // Email validation
+            const email = document.getElementById('email').value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('emailError', 'Invalid email format');
+                isValid = false;
+            }
+
+            // Password validation
+            const password = document.getElementById('password').value;
+            if (!/(?=.*[A-Z])(?=.*\d).{8,}/.test(password)) {
+                showError('passwordError', 
+                    'Password must be 8+ characters with 1 uppercase letter and 1 number');
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert('Form submitted successfully!');
+                e.target.reset();
+            }
+        });
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Bonus: Dropdown Message
+        document.getElementById('messageDropdown').addEventListener('change', (e) => {
+            const messages = {
+                greeting: 'Welcome to our website!',
+                warning: 'Important notice: Please read carefully!',
+                farewell: 'Thank you for visiting!'
+            };
+            document.getElementById('dropdownMessage').textContent = 
+                messages[e.target.value] || '';
+        });
+    </script>
+</body>
+</html>
